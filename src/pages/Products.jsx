@@ -43,11 +43,11 @@ export default function Products() {
   }
 
   const productToSend = {
-    name: form.name.trim(),
-    description: form.description.trim(),
-    price: parseFloat(form.price),  
-    stock: parseInt(form.stock, 10) || 0,
-    imageUrl: form.imageUrl.trim() || null
+    Name: form.name.trim(),
+    Description: form.description.trim(),
+    Price: parseFloat(form.price),  
+    Stock: parseInt(form.stock, 10) || 0,
+    ImageUrl: form.imageUrl.trim() || null
   };
 
   console.log("Producto enviado al backend:", productToSend);
