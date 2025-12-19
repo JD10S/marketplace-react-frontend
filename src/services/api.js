@@ -1,15 +1,11 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL ;
-
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;  
 
 
 export async function login(data) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+    const response = await fetch(`${API_BASE_URL}/users/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: data.email,
         password: data.password
@@ -22,10 +18,9 @@ export async function login(data) {
     }
 
     return await response.json();
-
   } catch (err) {
     if (err.name === "TypeError" && err.message.includes("Failed to fetch")) {
-      throw new Error("No hay conexión con el servidor. Revisa tu internet o intenta más tarde.");
+      throw new Error("No hay conexión con el servidor. Intenta más tarde.");
     }
     throw err;
   }
@@ -40,46 +35,50 @@ export async function register(user) {
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error);
+    throw new Error(error || "Error al registrarse");
   }
 
   return true; 
 }
 
 
-
 export async function getProducts() {
-  const response = await fetch(`${API_BASE_URL}/products`);
+  const response = await fetch(`${API_BASE_URL}/Products`);
+  if (!response.ok) throw new Error("Error cargando productos");
   return response.json();
 }
 
 export async function createProduct(product) {
-  const response = await fetch(`${API_BASE_URL}/products`, {
+  const response = await fetch(`${API_BASE_URL}/Products`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(product)
   });
 
   if (!response.ok) {
-    throw new Error("Error creating product");
+    const errorText = await response.text();
+    throw new Error(errorText || "Error creating product");
   }
 
   return true; 
 }
 
 export async function updateProduct(product) {
-  const response = await fetch(`${API_BASE_URL}/products`, {
+  const response = await fetch(`${API_BASE_URL}/Products`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(product),
   });
 
-  if (!response.ok) throw new Error("Error updating product");
-  return response.json();
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Error updating product");
+  }
+  return true;
 }
 
 export async function deleteProduct(id) {
-  const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/Products/${id}`, {
     method: "DELETE",
   });
 
@@ -96,7 +95,8 @@ export async function addToCart(item) {
   });
 
   if (!response.ok) {
-    throw new Error("Error adding to cart");
+    const errorText = await response.text();
+    throw new Error(errorText || "Error adding to cart");
   }
 
   return true;
@@ -107,7 +107,7 @@ export async function getCart(cartId) {
 
   if (!response.ok) {
     if (response.status === 404 || response.status === 400) {
-      return [];  // Carrito vacío
+      return []; 
     }
     throw new Error(`Error ${response.status}`);
   }
@@ -123,8 +123,13 @@ export async function updateCartItem(item) {
     body: JSON.stringify(item),
   });
 
-  if (!response.ok) throw new Error("Error updating cart");
-  return response.json();
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Error updating cart");
+  }
+
+  
+  return true;
 }
 
 export async function removeCartItem(id) {
