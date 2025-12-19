@@ -5,49 +5,85 @@ import {
   removeCartItem,
 } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import "../styles/cart.css"; 
+import "../styles/cart.css";
 
 export default function Cart() {
-  const cartId = localStorage.getItem("userId");
-  const [items, setItems] = useState([]);
   const navigate = useNavigate();
+  const cartId = localStorage.getItem("userId");
 
-  const loadCart = () => {
-    getCart(cartId).then(setItems);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true); // Para feedback visual mientras carga
+
+  const loadCart = async () => {
+    if (!cartId) {
+      navigate("/login");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await getCart(cartId);
+      
+      setItems(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error cargando carrito:", err);
+      setItems([]);
+      
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (cartId) loadCart();
-  }, [cartId]);
+    loadCart();
+  }, [cartId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleQtyChange = (id, value) => {
-    if (value <= 0) return;
-
-    setItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: value } : item
+    const qty = Math.max(1, Number(value) || 1); 
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, quantity: qty } : item
       )
     );
   };
 
-  const saveChanges = (item) => {
-    updateCartItem({
-      id: item.id,
-      cartId: item.cartId,
-      productId: item.productId,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice
-    }).then(loadCart);
+  const saveChanges = async (item) => {
+    setLoading(true);
+    try {
+      await updateCartItem({
+        id: item.id,
+        cartId: Number(cartId), 
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      });
+      await loadCart(); 
+    } catch (err) {
+      console.error("Error actualizando carrito:", err);
+      alert("No se pudo guardar la cantidad. Intenta de nuevo.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeItem = (id) => {
-    removeCartItem(id).then(loadCart);
+  const removeItem = async (id) => {
+    if (!window.confirm("¿Eliminar este producto del carrito?")) return;
+
+    setLoading(true);
+    try {
+      await removeCartItem(id);
+      await loadCart();
+    } catch (err) {
+      console.error("Error eliminando item:", err);
+      alert("No se pudo eliminar el producto.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const total = items.reduce(
-    (sum, i) => sum + i.quantity * i.unitPrice,
-    0
-  ).toFixed(2);
+  const total = items
+    .reduce((sum, i) => sum + i.quantity * i.unitPrice, 0)
+    .toFixed(2);
 
   if (!cartId) {
     navigate("/login");
@@ -59,7 +95,9 @@ export default function Cart() {
       <div className="cart-card">
         <h2>Carrito de Compras</h2>
 
-        {items.length === 0 ? (
+        {loading && items.length === 0 ? (
+          <p className="loading-text">Cargando carrito...</p>
+        ) : items.length === 0 ? (
           <div className="empty-cart">
             <p>Carrito vacío</p>
             <button onClick={() => navigate("/home")} className="shop-btn">
@@ -69,12 +107,16 @@ export default function Cart() {
         ) : (
           <>
             <div className="cart-items">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.id} className="cart-item">
                   <div className="item-info">
                     <strong>Producto #{item.productId}</strong>
-                    <p className="unit-price">Precio unitario: ${item.unitPrice.toFixed(2)}</p>
-                    <p className="subtotal">Subtotal: ${(item.quantity * item.unitPrice).toFixed(2)}</p>
+                    <p className="unit-price">
+                      Precio unitario: ${item.unitPrice.toFixed(2)}
+                    </p>
+                    <p className="subtotal">
+                      Subtotal: ${(item.quantity * item.unitPrice).toFixed(2)}
+                    </p>
                   </div>
 
                   <div className="quantity-group">
@@ -83,17 +125,26 @@ export default function Cart() {
                       type="number"
                       min="1"
                       value={item.quantity}
-                      onChange={e =>
-                        handleQtyChange(item.id, Number(e.target.value))
+                      onChange={(e) =>
+                        handleQtyChange(item.id, e.target.value)
                       }
+                      disabled={loading}
                     />
                   </div>
 
                   <div className="item-actions">
-                    <button onClick={() => saveChanges(item)} className="save-btn">
-                      Guardar cantidad
+                    <button
+                      onClick={() => saveChanges(item)}
+                      disabled={loading}
+                      className="save-btn"
+                    >
+                      {loading ? "Guardando..." : "Guardar cantidad"}
                     </button>
-                    <button onClick={() => removeItem(item.id)} className="remove-btn">
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      disabled={loading}
+                      className="remove-btn"
+                    >
                       Eliminar producto
                     </button>
                   </div>
@@ -102,10 +153,16 @@ export default function Cart() {
             </div>
 
             <div className="cart-total">
-              <h3>Total de la compra: <span className="total-amount">${total}</span></h3>
+              <h3>
+                Total de la compra:{" "}
+                <span className="total-amount">${total}</span>
+              </h3>
             </div>
 
-            <button onClick={() => navigate("/home")} className="back-home-btn">
+            <button
+              onClick={() => navigate("/home")}
+              className="back-home-btn"
+            >
               Volver a Home
             </button>
           </>
