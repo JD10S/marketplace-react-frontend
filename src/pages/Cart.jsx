@@ -12,7 +12,7 @@ export default function Cart() {
   const cartId = localStorage.getItem("userId");
 
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true); // Para feedback visual mientras carga
+  const [loading, setLoading] = useState(true); 
 
   const loadCart = async () => {
     if (!cartId) {
