@@ -29,23 +29,43 @@ export default function Products() {
     loadProducts();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!form.name || form.price <= 0) {
-      alert("Nombre y precio válidos son obligatorios");
-      return;
-    }
+  if (!form.name.trim()) {
+    alert("El nombre es obligatorio");
+    return;
+  }
 
-    const action = editingId
-      ? updateProduct({ id: editingId, ...form })
-      : createProduct(form);
+  if (!form.price || form.price <= 0) {
+    alert("El precio debe ser mayor a 0");
+    return;
+  }
 
-    action.then(() => {
-      loadProducts();
-      resetForm();
-    });
+  const productToSend = {
+    name: form.name.trim(),
+    description: form.description.trim(),
+    price: parseFloat(form.price),  
+    stock: parseInt(form.stock, 10) || 0,
+    imageUrl: form.imageUrl.trim() || null
   };
+
+  console.log("Producto enviado al backend:", productToSend);
+
+  try {
+    const action = editingId
+      ? updateProduct({ id: editingId, ...productToSend })
+      : createProduct(productToSend);
+
+    await action;
+    await loadProducts();
+    resetForm();
+    alert(editingId ? "Producto actualizado" : "Producto creado con éxito");
+  } catch (err) {
+    console.error("Error al guardar producto:", err);
+    alert("Error al guardar el producto. Revisa los datos.");
+  }
+};
 
   const edit = (product) => {
     setForm(product);

@@ -104,7 +104,16 @@ export async function addToCart(item) {
 
 export async function getCart(cartId) {
   const response = await fetch(`${API_BASE_URL}/cart/${cartId}`);
-  return response.json();
+
+  if (!response.ok) {
+    if (response.status === 404 || response.status === 400) {
+      return [];  // Carrito vacío
+    }
+    throw new Error(`Error ${response.status}`);
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : [];
 }
 
 export async function updateCartItem(item) {
