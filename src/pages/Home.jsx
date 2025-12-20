@@ -45,13 +45,12 @@ export default function Home() {
     setLoading(true);
     try {
       const payload = {
-        cartId: Number(userId),
         productId: product.id,
         quantity: qty,
         unitPrice: product.price
       };
 
-      await addToCart(payload);
+      await addToCart(userId,payload);
       alert(`¡Se añadieron ${qty} ${product.name} al carrito!`);
       
       

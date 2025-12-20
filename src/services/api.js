@@ -87,10 +87,12 @@ export async function deleteProduct(id) {
 }
 
 
-export async function addToCart(item) {
-  const response = await fetch(`${API_BASE_URL}/cart`, {
+export async function addToCart(userId, item) {
+  const response = await fetch(`${API_BASE_URL}/cart/${userId}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(item),
   });
 
