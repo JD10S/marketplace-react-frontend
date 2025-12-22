@@ -10,7 +10,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
   });
@@ -30,12 +30,12 @@ export default function Register() {
   const validate = () => {
     const newErrors = {};
 
-    if (!form.fullName.trim()) {
-      newErrors.fullName = "El nombre completo es obligatorio";
-    } else if (form.fullName.trim().length < 3) {
-      newErrors.fullName = "El nombre debe tener al menos 3 caracteres";
-    } else if (!nameRegex.test(form.fullName.trim())) {
-      newErrors.fullName = "Solo letras y espacios";
+    if (!form.name.trim()) {
+      newErrors.name = "El nombre completo es obligatorio";
+    } else if (form.name.trim().length < 3) {
+      newErrors.Name = "El nombre debe tener al menos 3 caracteres";
+    } else if (!nameRegex.test(form.name.trim())) {
+      newErrors.Name = "Solo letras y espacios";
     }
 
     if (!form.email.trim()) {
@@ -64,7 +64,7 @@ export default function Register() {
 
     try {
       await register({
-        fullName: form.fullName.trim(),
+        Name: form.name.trim(),
         email: form.email,
         password: form.password,
       });
@@ -87,14 +87,14 @@ export default function Register() {
 
         <div className="input-group">
           <input
-            name="fullName"
+            name="name"
             placeholder="Nombre completo"
-            value={form.fullName}
+            value={form.Name}
             onChange={handleChange}
-            className={errors.fullName ? "error" : ""}
+            className={errors.Name ? "error" : ""}
             disabled={loading}
           />
-          {errors.fullName && <span className="error-text">{errors.fullName}</span>}
+          {errors.Name && <span className="error-text">{errors.Name}</span>}
         </div>
 
         <div className="input-group">
