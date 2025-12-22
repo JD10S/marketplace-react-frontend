@@ -97,24 +97,16 @@ export async function deleteProduct(id) {
 
 
 export async function addToCart(userId, item) {
-  const payload = {
-    productId: item.productId,
-    quantity: item.quantity,
-    unitPrice: item.unitPrice
-  };
-
-  const response = await fetch(`${API_BASE_URL}/cart/${userId}`, {
+   const response = await fetch(`${API_BASE_URL}/cart/${userId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(item),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || "Error al añadir al carrito");
+    throw new Error(errorText || "Error adding to cart");
   }
-
-  return true;
 }
 
 export async function getCart(cartId) {
