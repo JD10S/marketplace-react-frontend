@@ -33,9 +33,9 @@ export default function Register() {
     if (!form.name.trim()) {
       newErrors.name = "El nombre completo es obligatorio";
     } else if (form.name.trim().length < 3) {
-      newErrors.Name = "El nombre debe tener al menos 3 caracteres";
+      newErrors.name = "El nombre debe tener al menos 3 caracteres";
     } else if (!nameRegex.test(form.name.trim())) {
-      newErrors.Name = "Solo letras y espacios";
+      newErrors.name = "Solo letras y espacios";
     }
 
     if (!form.email.trim()) {
@@ -64,7 +64,7 @@ export default function Register() {
 
     try {
       await register({
-        Name: form.name.trim(),
+        name: form.name.trim(),
         email: form.email,
         password: form.password,
       });
@@ -89,12 +89,12 @@ export default function Register() {
           <input
             name="name"
             placeholder="Nombre completo"
-            value={form.Name}
+            value={form.name}
             onChange={handleChange}
-            className={errors.Name ? "error" : ""}
+            className={errors.name ? "error" : ""}
             disabled={loading}
           />
-          {errors.Name && <span className="error-text">{errors.Name}</span>}
+          {errors.name && <span className="error-text">{errors.name}</span>}
         </div>
 
         <div className="input-group">
