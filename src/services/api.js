@@ -1,11 +1,14 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL;  
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL;
 
 
 export async function login(data) {
   try {
     const response = await fetch(`${API_BASE_URL}/users/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         email: data.email,
         password: data.password
@@ -29,7 +32,9 @@ export async function login(data) {
 export async function register(user) {
   const response = await fetch(`${API_BASE_URL}/users/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(user),
   });
 
@@ -38,7 +43,7 @@ export async function register(user) {
     throw new Error(error || "Error al registrarse");
   }
 
-  return true; 
+  return true;
 }
 
 
@@ -51,7 +56,9 @@ export async function getProducts() {
 export async function createProduct(product) {
   const response = await fetch(`${API_BASE_URL}/Products`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(product)
   });
 
@@ -60,13 +67,15 @@ export async function createProduct(product) {
     throw new Error(errorText || "Error creating product");
   }
 
-  return true; 
+  return true;
 }
 
 export async function updateProduct(product) {
   const response = await fetch(`${API_BASE_URL}/Products`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(product),
   });
 
@@ -89,9 +98,9 @@ export async function deleteProduct(id) {
 
 export async function addToCart(userId, item) {
   const payload = {
-    productId: Number(item.productId),
-    quantity: Number(item.quantity),
-    unitPrice: parseFloat(item.unitPrice) || null  
+    productId: item.productId,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice
   };
 
   const response = await fetch(`${API_BASE_URL}/cart/${userId}`, {
@@ -113,7 +122,7 @@ export async function getCart(cartId) {
 
   if (!response.ok) {
     if (response.status === 404 || response.status === 400) {
-      return []; 
+      return [];
     }
     throw new Error(`Error ${response.status}`);
   }
@@ -125,7 +134,9 @@ export async function getCart(cartId) {
 export async function updateCartItem(item) {
   const response = await fetch(`${API_BASE_URL}/cart`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(item),
   });
 
@@ -134,7 +145,7 @@ export async function updateCartItem(item) {
     throw new Error(errorText || "Error updating cart");
   }
 
-  
+
   return true;
 }
 
