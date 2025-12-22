@@ -88,17 +88,21 @@ export async function deleteProduct(id) {
 
 
 export async function addToCart(userId, item) {
+  const payload = {
+    productId: Number(item.productId),
+    quantity: Number(item.quantity),
+    unitPrice: parseFloat(item.unitPrice) || null  
+  };
+
   const response = await fetch(`${API_BASE_URL}/cart/${userId}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || "Error adding to cart");
+    throw new Error(errorText || "Error al añadir al carrito");
   }
 
   return true;

@@ -34,33 +34,31 @@ export default function Home() {
     }));
   };
 
-  const handleAddToCart = async (product) => {
-    const qty = Number(quantities[product.id] || 1);
+ const handleAddToCart = async (product) => {
+  const qty = Number(quantities[product.id] || 1);
 
-    if (qty < 1) {
-      alert("La cantidad debe ser al menos 1");
-      return;
-    }
+  if (qty < 1 || qty > product.stock) {
+    alert("Cantidad inválida");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const payload = {
-        productId: product.id,
-        quantity: qty,
-        unitPrice: product.price
-      };
+  setLoading(true);
+  try {
+    await addToCart(userId, {
+      productId: product.id,
+      quantity: qty,
+      unitPrice: product.price 
+    });
 
-      await addToCart(userId,payload);
-      alert(`¡Se añadieron ${qty} ${product.name} al carrito!`);
-      
-      
-      setQuantities(prev => ({ ...prev, [product.id]: 1 }));
-    } catch (err) {
-      alert("Error al añadir al carrito. Intenta de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert(`¡Se añadieron ${qty} "${product.name}" al carrito!`);
+    setQuantities(prev => ({ ...prev, [product.id]: 1 }));
+  } catch (err) {
+    console.error("Error:", err);
+    alert(err.message || "Error al añadir al carrito");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const logout = () => {
     localStorage.removeItem("userId");
