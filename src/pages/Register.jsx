@@ -66,7 +66,7 @@ export default function Register() {
       await register({
         fullName: form.fullName.trim(),
         email: form.email,
-        passwordHash: form.password,
+        password: form.password,
       });
 
       navigate("/login");
