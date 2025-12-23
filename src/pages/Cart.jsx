@@ -110,14 +110,19 @@ export default function Cart() {
               {items.map((item) => (
                 <div key={item.id} className="cart-item">
                   <div className="item-info">
-                    <strong>Producto #{item.productId}</strong>
-                    <p className="unit-price">
-                      Precio unitario: ${item.unitPrice.toFixed(2)}
-                    </p>
-                    <p className="subtotal">
-                      Subtotal: ${(item.quantity * item.unitPrice).toFixed(2)}
-                    </p>
-                  </div>
+  {item.imageUrl ? (
+    <img src={item.imageUrl} alt={item.productName || 'Producto'} className="cart-product-image" />
+  ) : (
+    <div className="placeholder-image">Sin imagen</div>
+  )}
+  <strong>{item.productName || `Producto #${item.productId}`}</strong>
+  <p className="unit-price">
+    Precio unitario: ${item.unitPrice?.toFixed(2) || '0.00'}
+  </p>
+  <p className="subtotal">
+    Subtotal: ${(item.quantity * (item.unitPrice || 0)).toFixed(2)}
+  </p>
+</div>
 
                   <div className="quantity-group">
                     <label>Cantidad:</label>
